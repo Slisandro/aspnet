@@ -1,0 +1,259 @@
+﻿@model GestionContableYugen.ViewModels.FacturaViewModel
+
+@{
+    ViewData["Title"] = "Crear Factura";
+}
+
+<h1 class="text-center">Crear Factura</h1>
+
+<div class="container">
+    <div class="row">
+        <!-- Sección Izquierda: Datos de Factura -->
+        <div class="col-md-5 p-4 bg-light border">
+            <h4 class="text-center">Datos de Factura</h4>
+            <form id="formFactura" method="post">
+                @Html.AntiForgeryToken()
+
+                <!-- ID oculto del usuario -->
+                <input type="hidden" id="UsuarioID" name="UsuarioID" value="@Model.UsuarioID" />
+                <input type="hidden" id="UsuarioNombre" name="UsuarioNombre" value="@Model.UsuarioNombre" />
+                <input type="hidden" id="DetalleFacturas" name="DetalleFacturas" />
+
+                <!-- Cliente -->
+                <div class="mb-3">
+                    <label class="fw-bold">Cliente:</label>
+                    <select asp-for="ClienteID" class="form-control"
+                            asp-items="@(new SelectList(ViewBag.Clientes, "ClienteID", "NombreCliente"))">
+                        <option value="">Seleccione un cliente</option>
+                    </select>
+                </div>
+
+                <!-- Tipo de Pago -->
+                <div class="mb-3">
+                    <label class="fw-bold">Tipo de Pago:</label>
+                    <select asp-for="idTipoPago" class="form-control"
+                            asp-items="@(new SelectList(ViewBag.TiposPago, "idTipoPago", "Descripcion"))">
+                        <option value="">Seleccione un tipo de pago</option>
+                    </select>
+                </div>
+
+                <!-- Descuento -->
+                <div class="mb-3">
+                    <label class="fw-bold">Descuento:</label>
+                    <select asp-for="idDescuento" class="form-control"
+                            asp-items="@(new SelectList(ViewBag.Descuentos, "idDescuento", "Descripcion"))">
+                        <option value="">Sin descuento</option>
+                    </select>
+                </div>
+
+                <!-- Tipo de Factura -->
+                <div class="form-group">
+                    <label for="idTipoFactura">Tipo de Factura:</label>
+                    <select id="idTipoFactura" name="idTipoFactura" class="form-control" required>
+                        <option value="">Seleccione un tipo de factura</option>
+                        @foreach (var tipo in ViewBag.TiposFactura)
+                        {
+                            <option value="@tipo.idTipoFactura">@tipo.Descripcion</option>
+                        }
+                    </select>
+                </div>
+
+
+                <!-- Botón Facturar -->
+                <button type="submit" class="btn btn-primary">Facturar</button>
+            </form>
+        </div>
+
+        <!-- Sección Derecha: Productos -->
+        <div class="col-md-7 p-4 bg-light border">
+            <h4 class="text-center">Lista de Productos</h4>
+            <input type="text" id="codigoBarras" class="form-control mb-3"
+                   placeholder="Escanee el código de barras">
+
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Código de Barras</th>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="productosTabla">
+                    <!-- Aquí se agregarán dinámicamente los productos -->
+                </tbody>
+            </table>
+
+            <h5 class="text-end">Total: <span id="totalFactura">0.00</span></h5>
+        </div>
+    </div>
+</div>
+
+<!-- Script para manejar la lectura del código de barras y agregar productos -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        console.log("✅ jQuery está cargado y listo.");
+
+        // ✅ Captura el código de barras y busca automáticamente
+        $("#codigoBarras").on("input", function () {
+            let input = $(this);
+            clearTimeout(input.data("timer"));
+
+            let timer = setTimeout(function () {
+                let codigo = input.val().trim();
+                if (codigo !== "") {
+                    console.log("🔍 Código de barras ingresado:", codigo);
+                    buscarProductoPorCodigo(codigo);
+                    input.val(""); // Limpia el campo después de agregar el producto
+                }
+            }, 500);
+
+            input.data("timer", timer);
+        });
+
+        // ✅ Buscar producto por código de barras
+        function buscarProductoPorCodigo(codigo) {
+            console.log("🔍 Buscando producto con código:", codigo);
+
+            $.ajax({
+                url: "/Factura/ObtenerProductoPorCodigo",
+                type: "GET",
+                data: { codigoBarras: codigo },
+                success: function (response) {
+                    console.log("✅ Respuesta de búsqueda:", response);
+
+                    if (response.success) {
+                        agregarProductoATabla(response.producto);
+                    } else {
+                        alert("⚠️ Producto no encontrado.");
+                    }
+                },
+                error: function (xhr) {
+                    console.error("❌ Error en AJAX:", xhr.responseText);
+                    alert("❌ Error al buscar el producto.");
+                }
+            });
+        }
+
+        // ✅ Agregar producto a la tabla
+        function agregarProductoATabla(producto) {
+            let tabla = $("#productosTabla");
+            let filaExistente = tabla.find(`tr[data-codigo="${producto.codigoBarras}"]`);
+
+            if (filaExistente.length > 0) {
+                // Si el producto ya está en la lista, incrementar la cantidad
+                let cantidadInput = filaExistente.find(".cantidad");
+                let nuevaCantidad = parseInt(cantidadInput.val()) + 1;
+                cantidadInput.val(nuevaCantidad);
+                actualizarTotal();
+            } else {
+                // Si el producto no está en la lista, agregarlo como nuevo
+                let fila = `
+                    <tr data-codigo="${producto.codigoBarras}">
+                        <td>${producto.codigoBarras}</td>
+                        <td>${producto.nombreProducto}</td>
+                        <td>${producto.precio.toFixed(2)}</td>
+                        <td><input type="number" value="1" min="1" class="form-control cantidad" onchange="actualizarTotal()"></td>
+                        <td class="subtotal">${producto.precio.toFixed(2)}</td>
+                        <td><button class="btn btn-danger btn-sm" onclick="eliminarFila(this)">X</button></td>
+                    </tr>
+                `;
+
+                tabla.append(fila);
+                actualizarTotal();
+            }
+        }
+
+        // ✅ Actualizar total de la factura
+        function actualizarTotal() {
+            let total = 0;
+            let detalles = [];
+
+            $("#productosTabla tr").each(function () {
+                let codigoBarras = $(this).find("td:eq(0)").text();
+                let nombreProducto = $(this).find("td:eq(1)").text();
+                let precio = parseFloat($(this).find("td:eq(2)").text());
+                let cantidad = parseInt($(this).find(".cantidad").val());
+                let subtotal = precio * cantidad;
+
+                $(this).find(".subtotal").text(subtotal.toFixed(2));
+                total += subtotal;
+
+                detalles.push({
+                    CodigoBarras: codigoBarras,
+                    NombreProducto: nombreProducto,
+                    Precio: precio,
+                    Cantidad: cantidad,
+                    Total: subtotal
+                });
+            });
+
+            $("#DetalleFacturas").val(JSON.stringify(detalles));
+            $("#totalFactura").text(total.toFixed(2));
+        }
+
+        // ✅ Eliminar un producto de la lista
+        function eliminarFila(button) {
+            $(button).closest("tr").remove();
+            actualizarTotal();
+        }
+
+        // ✅ Captura el envío del formulario y verifica `DetalleFacturas`
+             $("#formFactura").submit(function (event) {
+            event.preventDefault();
+
+            let usuarioID = $("#UsuarioID").val();
+            let usuarioNombre = $("#UsuarioNombre").val();
+            let tipoFactura = parseInt($("#idTipoFactura").val());
+            let clienteID = parseInt($("#ClienteID").val());
+            let tipoPagoID = parseInt($("#idTipoPago").val());
+            let descuentoID = $("#idDescuento").val() ? parseInt($("#idDescuento").val()) : null;
+
+            if (!usuarioID) {
+                console.error("❌ Error: UsuarioID no encontrado en el formulario.");
+                alert("⚠️ Error: No se encontró el usuario en la sesión.");
+                return;
+            }
+            usuarioID = parseInt(usuarioID); // Convertirlo a número después de validarlo
+
+            let detalleFacturasJson = $("#DetalleFacturas").val();
+            if (!detalleFacturasJson || JSON.parse(detalleFacturasJson).length === 0) {
+                alert("⚠️ Debes agregar al menos un producto a la factura.");
+                return;
+            }
+
+            let formData = {
+                UsuarioID: usuarioID,
+                UsuarioNombre: usuarioNombre,
+                idTipoFactura: tipoFactura,
+                ClienteID: clienteID,
+                idTipoPago: tipoPagoID,
+                idDescuento: descuentoID || 0,
+                DetalleFacturas: JSON.parse(detalleFacturasJson)
+            };
+
+            console.log("📤 Enviando formData:", formData);
+
+            $.ajax({
+                type: "POST",
+                url: "/Factura/Create",
+                contentType: "application/json",
+                data: JSON.stringify(formData),
+                success: function (response) {
+                    console.log("✅ Factura guardada correctamente:", response);
+                    alert("✅ Factura creada exitosamente.");
+                    window.location.href = "/Factura/Index";
+                },
+                error: function (xhr) {
+                    console.error("❌ Error al facturar:", xhr.responseText);
+                    alert("❌ Error al crear la factura. Revisa la consola.");
+                }
+            });
+        });
+
+    });
+</script>

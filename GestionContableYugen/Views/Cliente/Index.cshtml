@@ -1,0 +1,116 @@
+﻿@model IEnumerable<GestionContableYugen.ViewModels.ClienteViewModel>
+
+@{
+    ViewData["Title"] = "Clientes";
+}
+
+<h2 class="text-primary" style="color: black !important;">Clientes</h2>
+
+<!-- Sección de filtros -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a asp-action="Create" class="btn btn-primary">Nuevo Cliente</a>
+
+    <div class="d-flex">
+        <!-- Campo de búsqueda por nombre -->
+        <label for="nombreCliente" class="me-2">Buscar Cliente:</label>
+        <input type="text" id="nombreCliente" class="form-control me-2" placeholder="Ejemplo: Ana Bonilla">
+
+        <!-- Campo de búsqueda por número de cédula -->
+        <label for="numeroCedula" class="me-2">Cédula:</label>
+        <input type="text" id="numeroCedula" class="form-control me-2" placeholder="Ejemplo: 123456789">
+
+        <!-- Filtro por estado -->
+        <label for="estado" class="me-2">Estado:</label>
+        <select id="estado" class="form-select me-2">
+            <option value="">Todos</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+        </select>
+
+        <!-- Botones -->
+        <button class="btn btn-dark me-2" id="btnBuscar">Buscar</button>
+        <button id="btnExportar" class="btn btn-secondary">Exportar PDF</button>
+        <button class="btn btn-secondary ms-3" id="btnRestablecer">⟳</button>
+    </div>
+</div>
+
+<!-- Tabla con Bootstrap -->
+<table class="table table-bordered table-striped">
+    <thead class="table-primary">
+        <tr>
+            <th>Nombre</th>
+            <th>Número de Cédula</th>
+            <th>Teléfono</th>
+            <th>Correo Electrónico</th>
+            <th>Dirección</th>
+            <th>Estado</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cliente in Model)
+        {
+            <tr>
+                <td>@cliente.NombreCliente</td>
+                <td>@cliente.NumeroCedula</td>
+                <td>@cliente.Telefono</td>
+                <td>@cliente.CorreoElectronico</td>
+                <td>@cliente.Direccion</td>
+                <td>
+                    <span class="badge @(cliente.Estado ? "bg-success" : "bg-danger")">
+                        @(cliente.Estado ? "Activo" : "Inactivo")
+                    </span>
+                </td>
+                <td class="text-center">
+                    <a asp-action="Edit" asp-route-id="@cliente.ClienteID" class="btn btn-sm btn-primary">Editar</a>
+                    @if (cliente.Estado)
+                    {
+                        <a asp-action="Delete" asp-route-id="@cliente.ClienteID" class="btn btn-sm btn-danger">Deshabilitar</a>
+                    }
+                    else
+                    {
+                        <form asp-action="Reactivar" asp-route-id="@cliente.ClienteID" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-success">Reactivar</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // 🟢 Filtro de búsqueda
+        $("#btnBuscar").click(function () {
+            let nombreCliente = $("#nombreCliente").val().trim();
+            let numeroCedula = $("#numeroCedula").val().trim();
+            let estado = $("#estado").val();
+
+            let url = `/Cliente/Index?`;
+
+            if (nombreCliente) url += `nombreCliente=${encodeURIComponent(nombreCliente)}&`;
+            if (numeroCedula) url += `numeroCedula=${encodeURIComponent(numeroCedula)}&`;
+            if (estado) url += `estado=${encodeURIComponent(estado)}`;
+
+            console.log("Redirigiendo a:", url);
+            window.location.href = url;
+        });
+
+        // 🟢 Exportar a PDF
+        $("#btnExportar").click(function () {
+            let url = `/Cliente/ExportarPDF`;
+            console.log("Exportando PDF con URL:", url);
+            window.location.href = url;
+        });
+
+        // 🟢 Restablecer filtros
+        $("#btnRestablecer").click(function () {
+            console.log("Restableciendo filtros...");
+            window.location.href = "/Cliente/Index";
+        });
+    });
+</script>
+

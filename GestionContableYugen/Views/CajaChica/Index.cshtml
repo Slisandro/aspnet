@@ -1,0 +1,234 @@
+﻿@model List<GestionContableYugen.ViewModels.CajaChicaViewModel>
+
+@{
+    ViewData["Title"] = "Movimientos de Caja Chica";
+    var rolSesion = Context.Session.GetString("Rol");
+}
+
+<h2>Movimientos de Caja Chica</h2>
+
+<p>
+    <a asp-controller="CajaChica" asp-action="Create" class="btn btn-primary">
+        Nuevo Movimiento
+    </a>
+</p>
+
+<!-- 🔥 Mostrar Saldo Disponible -->
+<p>
+    <div class="alert alert-info">
+        <strong>Saldo Disponible:</strong> <span id="saldoDisponible">@ViewBag.SaldoDisponible.ToString("N2") CRC</span>
+    </div>
+
+</p>
+
+<!-- Sección de filtros -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex">
+        <label for="fechaInicio" class="me-2">Fecha Inicio:</label>
+        <input type="date" id="fechaInicio" class="form-control me-2">
+
+        <label for="fechaFin" class="me-2">Fecha Fin:</label>
+        <input type="date" id="fechaFin" class="form-control me-2">
+
+        <label for="proveedor" class="me-2">Proveedor:</label>
+        <input type="text" id="proveedor" class="form-control me-2" placeholder="Ejemplo: Proveedor S.A.">
+
+        <button class="btn btn-dark me-2" id="btnBuscar">Buscar</button>
+        <button id="btnExportar" class="btn btn-secondary">Exportar PDF</button>
+        <button class="btn btn-secondary me-2" id="btnRestablecer">Restablecer</button>
+    </div>
+</div>
+
+<!-- Tabla de movimientos -->
+<table class="table table-striped">
+    <thead class="table-primary">
+        <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Monto</th>
+            <th>Descripción</th>
+            <th>Número Factura</th>
+            <th>Proveedor</th>
+            <th>Factura Adjunta</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="tablaMovimientos">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.MovimientoID</td>
+                <td>@item.NombreUsuario</td>
+                <td>@item.Monto.ToString("N2")</td>
+                <td>@item.Descripcion</td>
+                <td>@item.NumeroFactura</td>
+                <td>@item.Proveedor</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.FacturaAdjunta))
+                    {
+                        var facturaPath = item.FacturaAdjunta.StartsWith("/") ? item.FacturaAdjunta : "/" + item.FacturaAdjunta;
+                        <a href="@Url.Content(facturaPath)" target="_blank">Ver</a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No adjunta</span>
+                    }
+                </td>
+                <td>@item.FechaMovimiento.ToShortDateString()</td>
+                <td>
+                    @if (item.Anulado)
+                    {
+                        <span class="badge bg-danger">Anulado</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Activo</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.MovimientoID" class="btn btn-warning">Editar</a>
+                    @if (!item.Anulado)
+                    {
+                        <button class="btn btn-danger btn-anular" data-id="@item.MovimientoID">Anular</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Script para anular, filtrar y exportar -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        console.log("jQuery está funcionando");
+
+        // Captura la anulación del movimiento
+        $(".btn-anular").click(function () {
+            var id = $(this).data("id");
+
+            if (!confirm("¿Estás seguro de anular este movimiento?")) {
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/CajaChica/Anular",
+                data: { id: id },
+                success: function (response) {
+                    alert(response.message);
+
+                    // ✅ Actualizar saldo en la interfaz sin recargar la página
+                    $("#saldoDisponible").text(response.saldo.toLocaleString('es-CR', { style: 'currency', currency: 'CRC' }));
+
+                    location.reload(); // 🔄 Recargar para actualizar la tabla
+                },
+                error: function (xhr) {
+                    console.error("Error:", xhr.responseText);
+                    alert("Error al anular el movimiento.");
+                }
+            });
+        });
+    });
+
+        $("#formCreateMovimiento").submit(function (event) {
+        event.preventDefault(); // Detener el envío tradicional
+
+        var formData = new FormData(this);
+
+        console.log("Enviando datos al servidor...");
+        for (var pair of formData.entries()) {
+            console.log(pair[0] + ": ", pair[1]); // ✅ Verificar que FacturaAdjuntaFile se esté enviando
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/CajaChica/Create",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                console.log("Guardado correctamente");
+                window.location.href = "/CajaChica/Index";
+            },
+            error: function (xhr) {
+                console.error("Error al guardar:", xhr.responseText);
+
+                if (xhr.responseText.includes("excede el saldo disponible")) {
+                    alert("❌ Error: El monto del movimiento excede el saldo disponible.");
+                } else {
+                    alert("Error al guardar el movimiento.");
+                }
+            }
+        });
+    });
+
+
+        // Captura el envío del formulario para crear un nuevo movimiento
+        $("#formCreateMovimiento").submit(function (event) {
+            event.preventDefault(); // Detener el envío tradicional
+
+            var formData = new FormData(this);
+
+            console.log("Enviando datos al servidor...");
+            for (var pair of formData.entries()) {
+                console.log(pair[0] + ": " + pair[1]);
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/CajaChica/Create",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    console.log("Guardado correctamente");
+                    window.location.href = "/CajaChica/Index";
+                },
+                error: function (xhr) {
+                    console.error("Error al guardar:", xhr.responseText);
+
+                    // Validación: Si el error es por saldo insuficiente, mostrar alerta
+                    if (xhr.responseText.includes("excede el saldo disponible")) {
+                        alert("❌ Error: El monto del movimiento excede el saldo disponible.");
+                    } else {
+                        alert("Error al guardar el movimiento.");
+                    }
+                }
+            });
+        });
+
+        console.log("Filtros y exportación en Caja Chica funcionando ✅");
+
+        // Filtros de búsqueda
+        $("#btnBuscar").click(function () {
+            let fechaInicio = $("#fechaInicio").val();
+            let fechaFin = $("#fechaFin").val();
+            let proveedor = $("#proveedor").val().trim();
+
+            let url = `/CajaChica/Index?`;
+
+            if (fechaInicio) url += `fechaInicio=${encodeURIComponent(fechaInicio)}&`;
+            if (fechaFin) url += `fechaFin=${encodeURIComponent(fechaFin)}&`;
+            if (proveedor) url += `proveedor=${encodeURIComponent(proveedor)}`;
+
+            console.log("Redirigiendo a:", url);
+            window.location.href = url;
+        });
+
+        // Exportar a PDF
+        $("#btnExportar").click(function () {
+            let url = `/CajaChica/ExportarPDF`;
+            console.log("Exportando PDF con URL:", url);
+            window.location.href = url;
+        });
+
+        // Restablecer filtros
+        $("#btnRestablecer").click(function () {
+            window.location.href = "/CajaChica/Index";
+        });
+    });
+</script>

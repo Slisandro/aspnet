@@ -1,0 +1,132 @@
+﻿@model GestionContableYugen.ViewModels.CuentaPorCobrarViewModel
+
+@{
+    ViewData["Title"] = "Editar Cuenta por Cobrar";
+}
+
+<div class="container d-flex justify-content-center align-items-center mt-5">
+    <div class="card p-4" style="width: 500px; border-radius: 10px; border: 1px solid #dee2e6;">
+        <h3 class="text-center mb-4">Editar Cuenta por Cobrar</h3>
+
+        <form id="formEditarCuentaPorCobrar" asp-action="Edit" method="post">
+            <!-- Campo oculto con el ID de la cuenta -->
+            <input type="hidden" asp-for="CuentaID" />
+
+
+            <!-- Cliente -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Cliente</label>
+                <select asp-for="ClienteID" id="ClienteID" class="form-control">
+                    <option value="">Seleccione un cliente</option>
+                    @if (ViewBag.Clientes != null)
+                    {
+                        foreach (var cliente in ViewBag.Clientes)
+                        {
+                            <option value="@cliente.Value">@cliente.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <!-- Campos ocultos para enviar ClienteID y NombreCliente -->
+            <input type="hidden" id="ClienteIDHidden" name="ClienteID" />
+            <input type="hidden" id="NombreClienteHidden" name="NombreCliente" />
+
+            <!-- Número de Cédula -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Número de Cédula</label>
+                <input asp-for="NumeroCedula" id="NumeroCedula" class="form-control" readonly />
+            </div>
+
+            <!-- Teléfono -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Teléfono</label>
+                <input asp-for="Telefono" id="Telefono" class="form-control" readonly />
+            </div>
+
+            <!-- Correo Electrónico -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Correo Electrónico</label>
+                <input asp-for="CorreoElectronico" id="CorreoElectronico" class="form-control" readonly />
+            </div>
+
+            <!-- Monto -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Monto</label>
+                <input asp-for="Monto" class="form-control" type="number" step="0.01" required />
+            </div>
+
+            <!-- Fecha de Vencimiento -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Fecha de Vencimiento</label>
+                <input asp-for="FechaVencimiento" type="date" class="form-control" required min="@DateTime.Today.ToString("yyyy-MM-dd")">
+                <span asp-validation-for="FechaVencimiento" class="text-danger"></span>
+            </div>
+
+            <!-- Estado -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Estado</label>
+                <select asp-for="Estado" class="form-control">
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Pagado">Pagado</option>
+                </select>
+            </div>
+
+            <div class="d-flex justify-content-center gap-2">
+                <button type="submit" class="btn btn-primary px-4">Actualizar</button>
+                <a asp-action="Index" class="btn btn-secondary px-4">Cancelar</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- Scripts de validación -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Script para autocompletar los datos del cliente -->
+<script>
+    $(document).ready(function () {
+        $("#ClienteID").change(function () {
+            var clienteId = $(this).val();
+            var clienteTexto = $("#ClienteID option:selected").text();
+
+            if (clienteId) {
+                $.get("/Clientes/GetClienteData/" + clienteId, function (data) {
+                    $("#NumeroCedula").val(data.numeroCedula);
+                    $("#Telefono").val(data.telefono);
+                    $("#CorreoElectronico").val(data.correoElectronico);
+
+                    // Guardar los valores en los campos ocultos para ser enviados en el formulario
+                    $("#ClienteIDHidden").val(clienteId);
+                    $("#NombreClienteHidden").val(clienteTexto);
+                }).fail(function () {
+                    alert("Error al obtener los datos del cliente.");
+                });
+            }
+        });
+
+        // Interceptar el envío del formulario con AJAX
+        $("#formEditarCuentaPorCobrar").submit(function (event) {
+            event.preventDefault(); // Evita el envío tradicional del formulario
+
+            var cuentaId = $("input[name='CuentaID']").val(); // Obtener el ID desde el formulario
+            var clienteTexto = $("#ClienteID option:selected").text();
+            $("#NombreClienteHidden").val(clienteTexto); // Asegurar que NombreCliente se llena antes de enviar
+
+            var formData = $(this).serialize(); // Serializar los datos del formulario
+
+            $.ajax({
+                type: "POST",
+                url: "/CuentaPorCobrar/Edit/" + cuentaId, // Enviar el ID en la URL
+                data: formData,
+                success: function (response) {
+                    window.location.href = "/CuentaPorCobrar/Index";
+                },
+                error: function (xhr) {
+                    alert("Error al actualizar la cuenta: " + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>

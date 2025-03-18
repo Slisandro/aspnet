@@ -1,0 +1,631 @@
+﻿/* --- Estilos Generales --- */
+body {
+    background-color: #f8f9fa;
+}
+
+/* --- Centrar el mensaje de bienvenida correctamente --- */
+.welcome-message {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+/* --- Contenedor del Dashboard --- */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 90%;
+    margin: auto;
+}
+
+/* --- Tarjetas del Dashboard --- */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 90%;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 80px;
+}
+
+/* --- Estilos de las Tarjetas --- */
+.card {
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+    background-color: white;
+}
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+
+    /* --- Centrar el botón y cambiar el tamaño --- */
+    .card .btn {
+        display: block;
+        margin: 10px auto;
+        width: 120px;
+        font-weight: bold;
+    }
+
+/* --- Ajustes en la Navbar --- */
+.navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #b8e4ff;
+    padding: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+    .navbar .navbar-nav {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .navbar .nav-item {
+        margin: 0 10px;
+    }
+
+    /* --- Estilo de Enlaces de la Navbar --- */
+    .navbar .nav-link {
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: #003b5b !important;
+        margin-right: 15px;
+    }
+
+        .navbar .nav-link:hover {
+            color: #02699d !important;
+        }
+
+    /* --- Cerrar sesión en rojo --- */
+    .navbar .text-danger {
+        color: #d9534f !important;
+        font-weight: bold;
+    }
+
+        .navbar .text-danger:hover {
+            color: #c9302c !important;
+        }
+
+/* --- Encabezado --- */
+.header {
+    background-color: #b8e4ff;
+    padding: 15px;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+/* --- Asegurar que el contenido principal ocupe toda la pantalla --- */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Contenedor principal para centrar la vista de login --- */
+.container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* --- Estilos para el login --- */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.login-box {
+    display: flex;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    align-items: center;
+    max-width: 600px;
+}
+
+/* Formulario */
+.login-form {
+    padding: 20px;
+}
+
+/* Imagen al lado derecho */
+.login-image img {
+    width: 150px;
+    height: auto;
+    margin-left: 20px;
+}
+
+/* --- Footer fijo en la parte inferior --- */
+.footer {
+    background-color: #b8e4ff;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+
+/* --- Contenedor principal de usuarios --- */
+.usuarios-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+}
+
+/* --- Botón "Nuevo Usuario" centrado --- */
+.nuevo-usuario-btn {
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* --- Título de Usuarios centrado --- */
+.usuarios-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* --- Estilos de la tabla de usuarios --- */
+.usuarios-table {
+    width: 50%; /* Reduce el ancho de la tabla para que se vea más centrada */
+    text-align: center;
+}
+
+    /* --- Estilos para los botones dentro de la tabla --- */
+    .usuarios-table .btn {
+        padding: 5px 15px;
+        font-size: 0.9rem;
+        margin: 2px;
+    }
+
+    /* --- Estilos del Formulario --- */
+.form-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.form-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+/* --- Estilo de los botones --- */
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.form-buttons .btn {
+    width: 48%; /* Hace que los botones tengan el mismo tamaño */
+}
+
+/* --- Formulario centrado --- */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.form-container {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Importar la fuente desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+/* Aplicar la fuente a todo el sistema */
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Ajuste para el nombre de la empresa */
+.empresa-nombre {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Ajuste para el mensaje de bienvenida */
+.bienvenido {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #444;
+}
+
+/* Ajuste para las instrucciones */
+.instrucciones {
+    font-size: 1rem;
+    color: #666;
+}
+/* Asegurar que el footer siempre esté abajo */
+html, body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1; /* Empuja el footer hacia abajo */
+}
+
+.footer {
+    background: #f8f9fa;
+    padding: 10px 0;
+    text-align: center;
+    width: 100%;
+    position: sticky;
+    bottom: 0;
+}
+/* --- Fondo uniforme para la pantalla de Login --- */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #ffffff; 
+}
+/* Ajustar margen superior para evitar que el encabezado tape el contenido */
+.content {
+    margin-top: 80px; /* Ajusta este valor si es necesario */
+}
+
+/* --- Ajustar el menú lateral para que no se tape con el encabezado --- */
+.sidebar {
+    padding-top: 60px; /* Ajusta este valor si es necesario */
+}
+/* --- Asegurar que el login esté perfectamente centrado --- */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* --- Ajuste del cuadro de Login para que no se desplace --- */
+.login-box {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    align-items: center;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+/* --- Imagen del candado en el Login --- */
+.login-image img {
+    width: 120px;
+    height: auto;
+    margin-top: 10px;
+}
+
+/* --- Estilos Generales --- */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0;
+}
+
+/* --- Encabezado (Barra Azul Superior) --- */
+.header {
+    background-color: #007bff;
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+/* --- Contenedor General para evitar solapamiento --- */
+.content {
+    margin-top: 80px; /* Espacio para que el encabezado no tape el contenido */
+    margin-left: 250px; /* Espacio para el menú lateral */
+    padding: 20px;
+    flex: 1;
+}
+
+/* --- Menú Lateral (Sidebar) --- */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 60px;
+    background: #f8f9fa;
+    padding-top: 20px;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+}
+
+    .sidebar a {
+        display: block;
+        padding: 15px 20px;
+        color: #333;
+        text-decoration: none;
+        font-weight: bold;
+        border-bottom: 1px solid #ddd;
+    }
+
+        .sidebar a:hover {
+            background: #ddd;
+        }
+
+        .sidebar a.text-danger {
+            color: red;
+            font-weight: bold;
+        }
+
+/* --- Centrar completamente el Login --- */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #ffffff;
+}
+
+.login-box {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    align-items: center;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+/* --- Imagen del candado en el Login --- */
+.login-image img {
+    width: 120px;
+    height: auto;
+    margin-top: 10px;
+}
+
+/* --- Ajustar el Footer para que siempre esté abajo --- */
+.footer {
+    background: #b8e4ff;
+    text-align: center;
+    padding: 10px;
+    width: 100%;
+    position: relative;
+    bottom: 0;
+}
+
+/* --- Estilos del Dashboard --- */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 90%;
+    margin: auto;
+}
+
+/* --- Mensajes de Bienvenida y Empresa --- */
+.bienvenido {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #444;
+    text-align: center;
+}
+
+.empresa-nombre {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+}
+
+.instrucciones {
+    font-size: 1rem;
+    color: #666;
+    text-align: center;
+}
+
+.form-container {
+    max-width: 400px; /* Ajusta el ancho del formulario */
+    margin: auto; /* Centra el formulario */
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .table th {
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+    }
+
+    .table td, .table th {
+        padding: 10px;
+        border: 1px solid #dee2e6;
+    }
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+}
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+    .btn-danger:hover {
+        background-color: #b02a37;
+    }
+
+/* Contenedor principal */
+.delete-container {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.15);
+    max-width: 450px;
+    margin: auto;
+}
+
+/* Título */
+.delete-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #FFC107;
+}
+
+/* Mensaje de confirmación */
+.delete-message {
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+/* Detalles */
+.delete-details {
+    text-align: left;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* Botones */
+.delete-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-delete {
+    background-color: #FFC107;
+    color: black;
+    font-weight: bold;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    .btn-delete:hover {
+        background-color: #E0A800;
+    }
+
+.btn-cancel {
+    background-color: #6C757D;
+    color: white;
+    font-weight: bold;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    .btn-cancel:hover {
+        background-color: #5A6268;
+    }
+
+
+/* Centrar el texto del header */
+.empresa-nombre {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/*Notificaciones*/
+
+#btnNotificaciones {
+    position: relative;
+    top: 10px;
+    font-size: 18px;
+}
+
+/* Estilos del dropdown de notificaciones */
+.notificaciones-dropdown {
+    position: absolute;
+    right: 15px;
+    width: 250px;
+    background: white;
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none;
+}
+
+.notificaciones-dropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notificaciones-dropdown ul li {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}

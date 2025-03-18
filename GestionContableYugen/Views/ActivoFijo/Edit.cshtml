@@ -1,0 +1,81 @@
+﻿@model GestionContableYugen.ViewModels.ActivoFijoViewModel
+
+@{
+    ViewData["Title"] = "Editar Activo Fijo";
+}
+
+<div class="container d-flex justify-content-center align-items-center mt-5">
+    <div class="card p-4" style="width: 450px; border-radius: 10px; border: 1px solid #dee2e6;">
+        <h3 class="text-center mb-4">Editar Activo Fijo</h3>
+
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ActivoID" />
+
+            <!-- Nombre del Activo -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Nombre del Activo</label>
+                <input asp-for="NombreActivo" class="form-control" required>
+                <span asp-validation-for="NombreActivo" class="text-danger"></span>
+            </div>
+
+            <!-- Fecha de Adquisición -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Fecha de Adquisición</label>
+                <input asp-for="FechaAdquisicion" type="date" class="form-control" required>
+                <span asp-validation-for="FechaAdquisicion" class="text-danger"></span>
+            </div>
+
+            <!-- Valor Inicial -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Valor Inicial</label>
+                <input asp-for="ValorInicial" type="number" step="0.01" class="form-control" required>
+                <span asp-validation-for="ValorInicial" class="text-danger"></span>
+            </div>
+
+            <!-- Vida Útil -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Vida Útil (Años)</label>
+                <input asp-for="VidaUtil" type="number" class="form-control" required>
+                <span asp-validation-for="VidaUtil" class="text-danger"></span>
+            </div>
+
+            <!-- Estado del Activo -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Estado</label>
+                <select asp-for="Estado" class="form-control">
+                    <option value="Nuevo">Nuevo</option>
+                    <option value="Usado">Usado</option>
+                    <option value="Mantenimiento">Mantenimiento</option>
+                    <option value="Dañado">Dañado</option>
+                    <option value="Dado de Baja">Dado de Baja</option>
+                </select>
+                <span asp-validation-for="Estado" class="text-danger"></span>
+            </div>
+
+            <!-- Última Fecha de Mantenimiento -->
+            <div class="form-group">
+                <label class="fw-bold">Última Fecha de Mantenimiento</label>
+                <input asp-for="UltimaFechaMantenimiento" type="date" class="form-control">
+            </div>
+
+            <!-- Comentario de Mantenimiento -->
+            <div class="form-group">
+                <label class="fw-bold">Comentario de Mantenimiento</label>
+                <input asp-for="ComentarioMantenimiento" class="form-control" maxlength="200">
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-center gap-2">
+                <button type="submit" class="btn btn-primary px-4">Guardar Cambios</button>
+                <a asp-action="Index" class="btn btn-secondary px-4">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

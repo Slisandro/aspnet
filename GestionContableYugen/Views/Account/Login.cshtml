@@ -1,0 +1,33 @@
+﻿@model GestionContableYugen.Models.LoginViewModel
+
+<div class="login-container">
+    <div class="login-box">
+        <!-- Formulario de Login -->
+        <div class="login-form">
+            <h2 class="login-title">Iniciar Sesión</h2>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                </div>
+            }
+
+            <form asp-action="Login" method="post">
+                <div class="form-group">
+                    <label>Nombre de Usuario</label>
+                    <input type="text" name="NombreUsuario" class="form-control" required />
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" name="Contrasena" class="form-control" required />
+                </div>
+                <button type="submit" class="btn btn-primary btn-block mt-3">Ingresar</button>
+            </form>
+        </div>
+
+        <!-- Imagen al lado derecho -->
+        <div class="login-image">
+            <img src="~/images/Login.png" alt="Login Icon">
+        </div>
+    </div>
+</div>

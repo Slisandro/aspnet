@@ -1,0 +1,138 @@
+﻿@model IEnumerable<GestionContableYugen.ViewModels.ActivoFijoViewModel>
+
+@{
+    ViewData["Title"] = "Activos Fijos";
+}
+
+<h2 class="text-primary" style="color: black !important;">Activos Fijos</h2>
+
+<!-- Sección de filtros -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a asp-action="Create" class="btn btn-primary">Agregar Nuevo Activo</a>
+
+    <div class="d-flex">
+        <!-- Campo de búsqueda por nombre del activo -->
+        <label for="nombreActivo" class="me-2">Buscar Activo:</label>
+        <input type="text" id="nombreActivo" class="form-control me-2" placeholder="Ejemplo: Computadora">
+
+        <!-- Filtro por estado -->
+        <label for="estado" class="me-2">Estado:</label>
+        <select id="estado" class="form-select me-2">
+            <option value="">Todos</option>
+            <option value="Nuevo">Nuevo</option>
+            <option value="En uso">En uso</option>
+            <option value="Mantenimiento">Mantenimiento</option>
+            <option value="Dañado">Dañado</option>
+            <option value="Usado">Usado</option>
+            <option value="Inactivo">Inactivo</option>
+        </select>
+
+        <!-- Botones -->
+        <button class="btn btn-dark me-2" id="btnBuscar">Buscar</button>
+        <button id="btnExportar" class="btn btn-secondary">Exportar PDF</button>
+        <button class="btn btn-secondary me-2" id="btnRestablecer">Restablecer</button>
+    </div>
+</div>
+
+<!-- Tabla con Bootstrap para mejor diseño -->
+<table class="table table-bordered table-striped">
+    <thead class="table-primary">
+        <tr>
+            <th>Nombre</th>
+            <th>Fecha de Adquisición</th>
+            <th>Valor Inicial</th>
+            <th>Vida Útil</th>
+            <th>Valor Depreciado</th>
+            <th>Estado</th>
+            <th>Última Fecha de Mantenimiento</th>
+            <th>Comentario de Mantenimiento</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="tablaActivos">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.NombreActivo</td>
+                <td>@item.FechaAdquisicion.ToShortDateString()</td>
+                <td>@item.ValorInicial.ToString("N2")</td>
+                <td>@item.VidaUtil años</td>
+                <td>@item.ValorDepreciado.ToString("N2")</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.Estado))
+                    {
+                        <span class="badge
+                            @(item.Estado == "En uso" ? "bg-primary" :
+                              item.Estado == "Mantenimiento" ? "bg-warning text-dark" :
+                              item.Estado == "Dañado" ? "bg-danger" :
+                              item.Estado == "Usado" ? "bg-secondary" :
+                              item.Estado == "Nuevo" ? "bg-info" :
+                              "bg-dark")">
+                            @(item.Estado)
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-dark">Inactivo</span>
+                    }
+                </td>
+
+                <td>
+                    @if (item.UltimaFechaMantenimiento.HasValue)
+                    {
+                        @item.UltimaFechaMantenimiento.Value.ToShortDateString()
+                    }
+                    else
+                    {
+                        <span class="text-muted">No registrado</span>
+                    }
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.ComentarioMantenimiento))
+                    {
+                        @item.ComentarioMantenimiento
+                    }
+                    else
+                    {
+                        <span class="text-muted">Sin comentarios</span>
+                    }
+                </td>
+                <td class="text-center">
+                    <a asp-action="Edit" asp-route-id="@item.ActivoID" class="btn btn-sm btn-warning">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@item.ActivoID" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Script para Filtrar y Exportar -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        console.log("Filtros y exportación PDF en Activos Fijos funcionando");
+
+        $("#btnBuscar").click(function () {
+            let nombreActivo = $("#nombreActivo").val().trim();
+            let estado = $("#estado").val();
+
+            let url = `/ActivoFijo/Index?`;
+
+            if (nombreActivo) url += `nombreActivo=${encodeURIComponent(nombreActivo)}&`;
+            if (estado) url += `estado=${encodeURIComponent(estado)}`;
+
+            window.location.href = url;
+        });
+
+        $("#btnExportar").click(function () {
+            let url = `/ActivoFijo/ExportarPDF`;
+            console.log("Exportando PDF con URL:", url);
+            window.location.href = url;
+        });
+
+        $("#btnRestablecer").click(function () {
+            window.location.href = "/ActivoFijo/Index";
+        });
+    });
+</script>

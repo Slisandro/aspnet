@@ -1,0 +1,59 @@
+﻿@model GestionContableYugen.ViewModels.CuentaPorPagarViewModel
+
+@{
+    ViewData["Title"] = "Eliminar Cuenta por Pagar";
+}
+
+<div class="delete-container">
+    <!--   <h2 class="delete-title">Eliminar Cuenta por Pagar</h2> -->
+    <h2 class="text-center text-danger">Eliminar Cuenta por Pagar</h2>
+    <p class="delete-message">¿Estás seguro de que deseas eliminar esta cuenta?</p>
+
+    <div class="delete-details">
+        <p><strong>Proveedor:</strong> @Model.NombreProveedor</p>
+        <p><strong>Número de Cédula:</strong> @Model.NumeroCedula</p>
+        <p><strong>Teléfono:</strong> @Model.Telefono</p>
+        <p><strong>Correo Electrónico:</strong> @Model.CorreoElectronico</p>
+        <p><strong>Monto:</strong> @Model.Monto.ToString("C")</p>
+        <p><strong>Fecha de Vencimiento:</strong> @Model.FechaVencimiento.ToShortDateString()</p>
+        <p><strong>Estado:</strong> @Model.Estado</p>
+    </div>
+
+    <form id="formDeleteCuenta" asp-action="Delete" method="post">
+        <input type="hidden" asp-for="CuentaID" />
+
+        <div class="delete-buttons">
+            <!--    <button type="submit" class="btn-delete">Eliminar</button> -->
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+            <a asp-action="Index" class="btn-cancel">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<!-- Script para manejar la eliminación con AJAX -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#formDeleteCuenta").submit(function (event) {
+            event.preventDefault();
+
+            var cuentaId = $("input[name='CuentaID']").val();
+            var formData = $(this).serialize();
+
+            if (confirm("¿Estás seguro que deseas eliminar esta cuenta por pagar?")) {
+                $.ajax({
+                    type: "POST",
+                    url: "/CuentaPorPagar/Delete/" + cuentaId, // URL corregida
+                    data: formData,
+                    success: function (response) {
+                        alert("Cuenta eliminada correctamente.");
+                        window.location.href = "/CuentaPorPagar/Index";
+                    },
+                    error: function (xhr) {
+                        alert("Error al eliminar la cuenta: " + xhr.responseText);
+                    }
+                });
+            }
+        });
+    });
+</script>

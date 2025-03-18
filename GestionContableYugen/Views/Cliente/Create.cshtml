@@ -1,0 +1,62 @@
+﻿@model GestionContableYugen.ViewModels.ClienteViewModel
+
+@{
+    ViewData["Title"] = "Crear Nuevo Cliente";
+}
+
+<div class="container d-flex justify-content-center align-items-center mt-5">
+    <div class="card p-4" style="width: 450px; border-radius: 10px; border: 1px solid #dee2e6;">
+        <h3 class="text-center mb-4">Crear Nuevo Cliente</h3>
+
+        <form asp-action="Create" method="post" novalidate>
+            @Html.AntiForgeryToken()
+
+            <!-- Nombre -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Nombre</label>
+                <input asp-for="NombreCliente" class="form-control" placeholder="Ejemplo: Juan Pérez" required>
+                <span asp-validation-for="NombreCliente" class="text-danger"></span>
+            </div>
+
+            <!-- Número de Cédula -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Número de Cédula</label>
+                <input asp-for="NumeroCedula" class="form-control" placeholder="Ejemplo: 123456789" required>
+                <span asp-validation-for="NumeroCedula" class="text-danger"></span>
+            </div>
+
+            <!-- Teléfono -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Teléfono</label>
+                <input asp-for="Telefono" class="form-control" placeholder="Ejemplo: 88888888" required>
+                <span asp-validation-for="Telefono" class="text-danger"></span>
+            </div>
+
+            <!-- Correo Electrónico -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Correo Electrónico</label>
+                <input asp-for="CorreoElectronico" type="email" class="form-control" placeholder="Ejemplo: correo@email.com" required>
+                <span asp-validation-for="CorreoElectronico" class="text-danger"></span>
+            </div>
+
+            <!-- Dirección -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Dirección</label>
+                <input asp-for="Direccion" class="form-control" placeholder="Ejemplo: Avenida Central, San José" required>
+                <span asp-validation-for="Direccion" class="text-danger"></span>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-center gap-2">
+                <button type="submit" class="btn btn-success px-4">Guardar</button>
+                <a asp-action="Index" class="btn btn-secondary px-4">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

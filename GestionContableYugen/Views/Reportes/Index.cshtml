@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Reportes";
+}
+
+<h2>Generar Reportes</h2>
+
+<<div class="card">
+    <div class="card-body text-center">
+        <h5 class="card-title">Reporte de Facturación</h5>
+        <p class="card-text">Consulta las facturas generadas en un rango de fechas.</p>
+        <a asp-controller="Reportes" asp-action="ReporteFacturacion" class="btn btn-primary">Ver Reporte</a>
+    </div>
+</div>
+
+
+<div class="card">
+    <div class="card-body text-center">
+        <h5 class="card-title">Reporte de Cuentas por Cobrar</h5>
+        <p class="card-text">Visualiza las cuentas pendientes de los clientes.</p>
+        <a href="@Url.Action("ReporteCuentasPorCobrar", "Reportes")" class="btn btn-primary">Ver Reporte</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body text-center">
+        <h5 class="card-title">Reporte de Cuentas por Pagar</h5>
+        <p class="card-text">Consulta los pagos pendientes a proveedores.</p>
+        <a href="@Url.Action("ReporteCuentasPorPagar", "Reportes")" class="btn btn-primary">Ver Reporte</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body text-center">
+        <h5 class="card-title">Reporte de Cierre de Caja</h5>
+        <p class="card-text">Consulta los cierres de caja realizados.</p>
+        <a href="@Url.Action("ReporteCierreCaja", "Reportes")" class="btn btn-primary">Ver Reporte</a>
+    </div>
+</div>
+
+

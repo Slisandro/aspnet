@@ -1,0 +1,17 @@
+﻿@model GestionContableYugen.Models.CierreCaja
+
+<h2>¿Seguro que deseas eliminar este cierre de caja?</h2>
+
+<div>
+    <p><strong>Fecha:</strong> @Model.FechaCierre.ToShortDateString()</p>
+    <p><strong>Saldo Inicial:</strong> @Model.SaldoInicial</p>
+    <p><strong>Total Ingresos:</strong> @Model.TotalIngresos</p>
+    <p><strong>Total Egresos:</strong> @Model.TotalEgresos</p>
+    <p><strong>Saldo Final:</strong> @Model.SaldoFinal</p>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="CierreID" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

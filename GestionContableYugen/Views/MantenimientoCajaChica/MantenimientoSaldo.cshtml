@@ -1,0 +1,26 @@
+﻿@model GestionContableYugen.Models.CajaChicaConfig
+
+@{
+    ViewData["Title"] = "Mantenimiento de Caja Chica";
+}
+
+<h2 class="text-primary">Mantenimiento de Saldo de Caja Chica</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+<p><strong>Saldo Disponible Actual:</strong> <span id="saldoActual">@Model.SaldoDisponible.ToString("N2") CRC</span></p>
+
+<form asp-controller="MantenimientoCajaChica" asp-action="ActualizarSaldo" method="post">
+    <div class="mb-3">
+        <label class="form-label">Monto a Agregar:</label>
+        <input asp-for="SaldoDisponible" class="form-control" type="number" step="0.01" required>
+        <span asp-validation-for="SaldoDisponible" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Agregar Saldo</button>
+    <a asp-controller="CajaChica" asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+

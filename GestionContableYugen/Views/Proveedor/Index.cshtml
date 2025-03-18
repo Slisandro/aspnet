@@ -1,0 +1,114 @@
+﻿@model IEnumerable<GestionContableYugen.ViewModels.ProveedorViewModel>
+
+<h2 class="text-primary" style="color: black !important;">Gestión de Proveedores</h2>
+
+<!-- Sección de filtros -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a asp-action="Create" class="btn btn-primary">Agregar Nuevo Proveedor</a>
+
+    <div class="d-flex">
+        <!-- Filtro por nombre -->
+        <label for="nombreProveedor" class="me-2">Nombre:</label>
+        <input type="text" id="nombreProveedor" class="form-control me-2" placeholder="Ejemplo: Proveedor S.A.">
+
+        <!-- Filtro por número de cédula -->
+        <label for="numeroCedula" class="me-2">Cédula:</label>
+        <input type="text" id="numeroCedula" class="form-control me-2" placeholder="Ejemplo: 3-1020-4567">
+
+        <!-- Filtro por estado -->
+        <label for="estado" class="me-2">Estado:</label>
+        <select id="estado" class="form-select me-2">
+            <option value="">Todos</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+        </select>
+
+        <!-- Botones -->
+        <button class="btn btn-dark me-2" id="btnBuscar">Buscar</button>
+        <button id="btnExportar" class="btn btn-secondary">Exportar PDF</button>
+        <button class="btn btn-secondary me-2" id="btnRestablecer">Restablecer</button>
+    </div>
+</div>
+
+<!-- Tabla -->
+<table class="table table-bordered table-striped">
+    <thead class="table-primary">
+        <tr>
+            <th>Nombre</th>
+            <th>Número de Cédula</th>
+            <th>Teléfono</th>
+            <th>Correo Electrónico</th>
+            <th>Dirección</th>
+            <th>Estado</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="tablaProveedores">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.NombreProveedor</td>
+                <td>@item.NumeroCedula</td>
+                <td>@item.Telefono</td>
+                <td>@item.CorreoElectronico</td>
+                <td>@item.Direccion</td>
+                <td>
+                    <span class="badge @(item.Estado ? "bg-success" : "bg-danger")">
+                        @(item.Estado ? "Activo" : "Inactivo")
+                    </span>
+                </td>
+                <td class="text-center">
+                    <a asp-action="Edit" asp-route-id="@item.ProveedorID" class="btn btn-sm btn-warning">Editar</a>
+
+                    @if (item.Estado)
+                    {
+                        <a asp-action="Delete" asp-route-id="@item.ProveedorID" class="btn btn-sm btn-danger">Deshabilitar</a>
+                    }
+                    else
+                    {
+                        <form asp-action="Reactivar" asp-route-id="@item.ProveedorID" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-success">Reactivar</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Script para Filtrar y Exportar PDF -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        console.log("Filtros y exportación de PDF en Proveedores funcionando ✅");
+
+        // Filtros de búsqueda
+        $("#btnBuscar").click(function () {
+            let nombreProveedor = $("#nombreProveedor").val().trim();
+            let numeroCedula = $("#numeroCedula").val().trim();
+            let estado = $("#estado").val();
+
+            let url = `/Proveedor/Index?`;
+
+            if (nombreProveedor) url += `nombreProveedor=${encodeURIComponent(nombreProveedor)}&`;
+            if (numeroCedula) url += `numeroCedula=${encodeURIComponent(numeroCedula)}&`;
+            if (estado) url += `estado=${encodeURIComponent(estado)}`;
+
+            console.log("Redirigiendo a:", url);
+            window.location.href = url;
+        });
+
+        // Exportar a PDF
+        $("#btnExportar").click(function () {
+            let url = `/Proveedor/ExportarPDF`;
+            console.log("Exportando PDF con URL:", url);
+            window.location.href = url;
+        });
+
+        // Restablecer filtros
+        $("#btnRestablecer").click(function () {
+            window.location.href = "/Proveedor/Index"; // 🔄 Recarga limpia sin filtros
+        });
+    });
+</script>

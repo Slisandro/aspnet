@@ -1,0 +1,54 @@
+﻿@model IEnumerable<GestionContableYugen.Models.Usuario>
+
+<div class="usuarios-container">
+    <a asp-action="Create" class="btn btn-primary nuevo-usuario-btn">Nuevo Usuario</a>
+
+    <h1 class="usuarios-title">Usuarios</h1>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped usuarios-table">
+            <thead class="table-primary">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var usuario in Model)
+                {
+                    <tr>
+                        <td>@usuario.NombreUsuario</td>
+                        <td>
+                            @if (usuario.Estado)
+                            {
+                                <span class="badge bg-white text-dark border border-dark">Activo</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger text-white">Inactivo</span>
+                            }
+                        </td>
+
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@usuario.UsuarioID" class="btn btn-primary">Editar</a>
+
+                            @if (usuario.Estado)
+                            {
+                                <!-- Si el usuario está activo, se muestra el botón para deshabilitar -->
+                                <a asp-action="Delete" asp-route-id="@usuario.UsuarioID" class="btn btn-danger">Deshabilitar</a>
+                            }
+                            else
+                            {
+                                <!-- Si el usuario está inactivo, aparece el botón para reactivar -->
+                                <form asp-action="Reactivar" asp-route-id="@usuario.UsuarioID" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-success">Reactivar</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

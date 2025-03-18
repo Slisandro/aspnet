@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Sistema de Gestión Contable</title>
+
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+    <!-- Estilos Externos -->
+    <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+
+    <style>
+        header h1 {
+            text-align: center;
+            width: 100%;
+            font-size: 26px;
+            padding: 15px 0;
+        }
+    </style>
+
+</head>
+<body>
+    <!-- Encabezado -->
+    <header class="header d-flex justify-content-between align-items-center">
+        <h1>Sistema de Gestión Contable Servicio de Fotocopiado Yugen</h1>
+    </header>
+
+    <!-- Menú lateral si el usuario está autenticado -->
+    @{
+        var usuarioSesion = Context.Session.GetString("Usuario");
+        var rolSesion = Context.Session.GetString("Rol");
+        Console.WriteLine($"🔍 Verificando usuario en Layout: {usuarioSesion}");
+        Console.WriteLine($"🔍 Verificando rol en Layout: {rolSesion}");
+    }
+
+    @if (!string.IsNullOrEmpty(usuarioSesion))
+    {
+        <div class="sidebar">
+            <a asp-controller="Dashboard" asp-action="Index"><strong>Inicio</strong></a>
+
+            @if (rolSesion == "Administrador")
+            {
+                <!-- Menú Desplegable de Mantenimientos -->
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="mantenimientosDropdown" role="button" data-bs-toggle="collapse" data-bs-target="#mantenimientosMenu">Mantenimientos
+                    </a>
+                    <div id="mantenimientosMenu" class="collapse">
+                        <a asp-controller="Usuario" asp-action="Index" class="dropdown-item">Usuarios</a>
+                        <a asp-controller="Cliente" asp-action="Index" class="dropdown-item">Clientes</a>
+                        <a asp-controller="Proveedor" asp-action="Index" class="dropdown-item">Proveedores</a>
+                        <a asp-controller="ActivoFijo" asp-action="Index" class="dropdown-item">Activos Fijos</a>
+                        <a asp-controller="MantenimientoCajaChica" asp-action="Index" class="dropdown-item">Saldo Caja Chica</a>
+
+                    </div>
+                </div>
+
+                <a asp-controller="Factura" asp-action="Index">Facturación</a>
+                <a asp-controller="CuentaPorCobrar" asp-action="Index">Cuentas por Cobrar</a>
+                <a asp-controller="CuentaPorPagar" asp-action="Index">Cuentas por Pagar</a>
+                <a asp-controller="CajaChica" asp-action="Index">Caja Chica</a>
+                <a asp-controller="Contabilidad" asp-action="Index">Contabilidad</a>
+                <a asp-controller="Producto" asp-action="Index">Inventario</a>
+                <a asp-controller="Reportes" asp-action="Index">Reportes</a>
+            }
+
+            @if (rolSesion == "Asistente")
+            {
+                <a asp-controller="Factura" asp-action="Index">Facturación</a>
+                <a asp-controller="CuentaPorCobrar" asp-action="Index">Cuentas por Cobrar</a>
+                <a asp-controller="CuentaPorPagar" asp-action="Index">Cuentas por Pagar</a>
+                <a asp-controller="CajaChica" asp-action="Index">Caja Chica</a>
+                <a asp-controller="ActivoFijo" asp-action="Index">Activos Fijos</a>
+                <a asp-controller="Contabilidad" asp-action="Index">Contabilidad</a>
+                <a asp-controller="Producto" asp-action="Index">Inventario</a>
+                <a asp-controller="Reportes" asp-action="Index">Reportes</a>
+            }
+
+            @if (rolSesion == "Cajero")
+            {
+                <a asp-controller="CajaChica" asp-action="Index">Caja Chica</a>
+                <a asp-controller="Factura" asp-action="Index">Facturación</a>
+                <a asp-controller="CuentaPorCobrar" asp-action="Index">Cuentas por Cobrar</a>
+                <a asp-controller="CuentaPorPagar" asp-action="Index">Cuentas por Pagar</a>
+            }
+
+            @if (rolSesion == "Bodeguero")
+            {
+                <a asp-controller="Producto" asp-action="Index">Inventario</a>
+                <a asp-controller="Reportes" asp-action="Index">Reportes</a>
+            }
+
+            <a asp-controller="Account" asp-action="Logout" class="text-danger">Cerrar Sesión</a>
+        </div>
+    }
+    else
+    {
+        <p class="text-danger">Error: No hay sesión activa</p>
+    }
+
+    <!-- Contenido principal -->
+    <main class="content">
+        @RenderBody()
+    </main>
+
+    <!-- Pie de Página -->
+    <footer class="footer">
+        <p>SERVICIO DE FOTOCOPIADO YUGEN</p>
+    </footer>
+
+    <!-- Scripts Externos -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

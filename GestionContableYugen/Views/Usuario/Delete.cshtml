@@ -1,0 +1,14 @@
+﻿@model GestionContableYugen.Models.Usuario
+
+<h2>Deshabilitar Usuario</h2>
+
+<p>¿Está seguro de que desea <strong>desactivar</strong> este usuario?</p>
+
+<h4 class="fw-bold">@Model.NombreUsuario</h4>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="UsuarioID" />
+
+    <button type="submit" class="btn btn-warning">Desactivar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

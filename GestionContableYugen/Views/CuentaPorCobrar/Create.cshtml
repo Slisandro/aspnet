@@ -1,0 +1,138 @@
+﻿@model GestionContableYugen.ViewModels.CuentaPorCobrarViewModel
+
+@{
+    ViewData["Title"] = "Agregar Cuenta por Cobrar";
+}
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4" style="width: 500px; border-radius: 10px; border: 1px solid #dee2e6;">
+        <h3 class="text-center mb-4">Agregar Cuenta por Cobrar</h3>
+
+        <form id="formCuentaPorCobrar" asp-action="Create" method="post" novalidate>
+
+            <!-- Cliente -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Cliente</label>
+                <select asp-for="ClienteID" id="ClienteID" class="form-control">
+                    <option value="">Seleccione un cliente</option>
+                    @if (ViewBag.Clientes != null)
+                    {
+                        foreach (var cliente in ViewBag.Clientes)
+                        {
+                            <option value="@cliente.Value">@cliente.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <!-- Campos ocultos para enviar ClienteID y NombreCliente -->
+            <input type="hidden" id="ClienteIDHidden" name="ClienteID" />
+            <input type="hidden" id="NombreClienteHidden" name="NombreCliente" />
+
+            <!-- Número de Cédula -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Número de Cédula</label>
+                <input asp-for="NumeroCedula" id="NumeroCedula" class="form-control" readonly />
+            </div>
+
+            <!-- Teléfono -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Teléfono</label>
+                <input asp-for="Telefono" id="Telefono" class="form-control" readonly />
+            </div>
+
+            <!-- Correo Electrónico -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Correo Electrónico</label>
+                <input asp-for="CorreoElectronico" id="CorreoElectronico" class="form-control" readonly />
+            </div>
+
+            <!-- Monto -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Monto</label>
+                <input asp-for="Monto" class="form-control" type="number" step="0.01" required />
+            </div>
+
+            <!-- Fecha de Vencimiento -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Fecha de Vencimiento</label>
+                <input asp-for="FechaVencimiento" type="date" class="form-control" required min="@DateTime.Today.ToString("yyyy-MM-dd")">
+                <span asp-validation-for="FechaVencimiento" class="text-danger"></span>
+            </div>
+
+            <!-- Estado -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Estado</label>
+                <select asp-for="Estado" class="form-control">
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Pagado">Pagado</option>
+                </select>
+            </div>
+
+            <div class="d-flex justify-content-center gap-2">
+                <button type="submit" class="btn btn-success px-4">Guardar</button>
+                <a asp-action="Index" class="btn btn-secondary px-4">Cancelar</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- Scripts de validación -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<!-- Script para autocompletar los datos del cliente -->
+<script>
+    $(document).ready(function () {
+        $("#ClienteID").change(function () {
+            var clienteId = $(this).val();
+            var clienteTexto = $("#ClienteID option:selected").text();
+
+            if (clienteId) {
+                $.get("/Clientes/GetClienteData/" + clienteId, function (data) {
+                    $("#NumeroCedula").val(data.numeroCedula);
+                    $("#Telefono").val(data.telefono);
+                    $("#CorreoElectronico").val(data.correoElectronico);
+
+                    // Guardar los valores en los campos ocultos para ser enviados en el formulario
+                    $("#ClienteIDHidden").val(clienteId);
+                    $("#NombreClienteHidden").val(clienteTexto);
+                }).fail(function () {
+                    alert("Error al obtener los datos del cliente.");
+                });
+            } else {
+                $("#NumeroCedula").val("");
+                $("#Telefono").val("");
+                $("#CorreoElectronico").val("");
+                $("#ClienteIDHidden").val("");
+                $("#NombreClienteHidden").val("");
+            }
+        });
+
+        // Interceptar el envío del formulario con AJAX
+        $("#formCuentaPorCobrar").submit(function (event) {
+            event.preventDefault(); 
+
+            var formData = $(this).serialize(); 
+
+            $.ajax({
+                type: "POST",
+                url: "/CuentaPorCobrar/Create",
+                data: formData,
+                success: function (response) {
+                //  alert("Cuenta por Cobrar guardada correctamente.");
+                    window.location.href = "/CuentaPorCobrar/Index"; 
+                },
+                error: function (xhr) {
+                    alert("Error al guardar la cuenta: " + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>

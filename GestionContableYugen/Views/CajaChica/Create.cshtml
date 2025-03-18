@@ -1,0 +1,151 @@
+﻿@model GestionContableYugen.ViewModels.CajaChicaViewModel
+
+@{
+    ViewData["Title"] = "Nuevo Movimiento de Caja Chica";
+}
+
+
+<div class="container d-flex justify-content-center align-items-center mt-5">
+    <div class="card p-4" style="width: 450px; border-radius: 10px; border: 1px solid #dee2e6;">
+        <h3 class="text-center mb-4">Nuevo Movimiento</h3>
+
+
+        <form id="formCreateMovimiento" asp-action="Create" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+
+
+            <!--  Campos ocultos para enviar el usuario -->
+            <input type="hidden" asp-for="UsuarioID" />
+            <input type="hidden" asp-for="NombreUsuario" />
+
+            <!-- Usuario -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Usuario</label>
+                <input type="text" class="form-control" value="@User.Identity.Name" disabled />
+            </div>
+
+            <!-- Fecha de Movimiento -->
+            <div class="form-group">
+                <label>Fecha de Movimiento</label>
+                <input asp-for="FechaMovimiento" type="date" class="form-control" required>
+                <span asp-validation-for="FechaMovimiento" class="text-danger"></span>
+            </div>
+
+            <!-- Monto -->
+            <div class="form-group">
+                <label>Monto</label>
+                <input asp-for="Monto" type="number" class="form-control" step="0.01" required placeholder="Ejemplo: 10000">
+                <span asp-validation-for="Monto" class="text-danger"></span> 
+            </div>
+
+
+            <!-- Descripción -->
+            <div class="form-group">
+                <label>Descripción</label>
+                <input asp-for="Descripcion" class="form-control" maxlength="200" placeholder="Ejemplo: Compra de suministros">
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+            </div>
+
+            <!-- Número de Factura -->
+            <div class="form-group">
+                <label>Número de Factura</label>
+                <input asp-for="NumeroFactura" class="form-control" maxlength="50" placeholder="Ejemplo: FAC-2023-001">
+                <span asp-validation-for="NumeroFactura" class="text-danger"></span>
+            </div>
+
+            <!-- Proveedor -->
+            <div class="form-group">
+                <label>Proveedor</label>
+                <input asp-for="Proveedor" class="form-control" maxlength="100" placeholder="Ejemplo: Suministros S.A.">
+                <span asp-validation-for="Proveedor" class="text-danger"></span>
+            </div>
+
+            <!-- Factura Adjunta -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Factura Adjunta (Opcional)</label>
+                <input type="file" name="FacturaAdjuntaFile" class="form-control" />
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-center gap-2">
+                <button type="submit" class="btn btn-success px-4">Guardar</button>
+                <a asp-action="Index" class="btn btn-secondary px-4">Cancelar</a>
+            </div>
+        </form>
+
+        
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        console.log("jQuery está funcionando");
+
+        // Captura la anulación del movimiento
+        $(".btn-anular").click(function () {
+            var id = $(this).data("id");
+
+            if (!confirm("¿Estás seguro de anular este movimiento?")) {
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/CajaChica/Anular",
+                data: { id: id },
+                success: function (response) {
+                    alert(response.message);
+
+                    //  NUEVO: Actualizar saldo disponible en la interfaz sin refrescar la página
+                    $("#saldoDisponible").text(response.saldo.toLocaleString('es-CR', { style: 'currency', currency: 'CRC' }));
+
+                    location.reload(); // Refrescar la página para actualizar la tabla
+                },
+                error: function (xhr) {
+                    console.error("Error:", xhr.responseText);
+                    alert("Error al anular el movimiento.");
+                }
+            });
+        });
+
+        // Captura el envío del formulario para crear un nuevo movimiento
+        $("#formCreateMovimiento").submit(function (event) {
+            event.preventDefault(); // Detener el envío tradicional
+
+            var formData = new FormData(this);
+
+            console.log("Enviando datos al servidor...");
+            for (var pair of formData.entries()) {
+                console.log(pair[0] + ": " + pair[1]);
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/CajaChica/Create",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    console.log("Guardado correctamente");
+                    window.location.href = "/CajaChica/Index";
+                },
+                error: function (xhr) {
+                    console.error("Error al guardar:", xhr.responseText);
+
+                    // 🔥 NUEVO: Validación para mostrar una alerta si el monto excede el saldo disponible
+                    if (xhr.responseText.includes("excede el saldo disponible")) {
+                        alert("❌ Error: El monto del movimiento excede el saldo disponible.");
+                    } else {
+                        alert("Error al guardar el movimiento.");
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+

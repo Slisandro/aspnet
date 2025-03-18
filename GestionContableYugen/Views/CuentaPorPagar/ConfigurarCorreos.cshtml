@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "Configurar Correos de Notificación";
+}
+
+<div class="container mt-4">
+    <h3 class="mb-3">Configurar Correos de Notificación</h3>
+
+    <form id="formConfigCorreo">
+        <div class="form-group">
+            <label for="correos">Correos Electrónicos (separados por ";"):</label>
+            <input type="text" id="correos" class="form-control" value="@ViewBag.Correos" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+    </form>
+</div>
+
+<script>
+    $("#formConfigCorreo").submit(function (event) {
+        event.preventDefault();
+
+        $.ajax({
+            type: "POST",
+            url: "/CuentaPorPagar/GuardarCorreos",
+            data: { correos: $("#correos").val() },
+            success: function () {
+                alert("Correos actualizados correctamente.");
+            },
+            error: function () {
+                alert("Error al actualizar los correos.");
+            }
+        });
+    });
+</script>

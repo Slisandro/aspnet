@@ -1,0 +1,129 @@
+﻿@model GestionContableYugen.ViewModels.CuentaPorPagarViewModel
+
+@{
+    ViewData["Title"] = "Editar Cuenta por Pagar";
+}
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4" style="width: 500px; border-radius: 10px; border: 1px solid #dee2e6;">
+        <h3 class="text-center mb-4">Editar Cuenta por Pagar</h3>
+
+        <form id="formEditarCuentaPorPagar" asp-action="Edit" method="post">
+            <input type="hidden" asp-for="CuentaID" />
+
+            <!-- Proveedor -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Proveedor</label>
+                <select asp-for="ProveedorID" id="ProveedorID" class="form-control">
+                    <option value="">Seleccione un proveedor</option>
+                    @if (ViewBag.Proveedores != null)
+                    {
+                        foreach (var proveedor in ViewBag.Proveedores)
+                        {
+                            <option value="@proveedor.Value" selected="@(proveedor.Value == Model.ProveedorID.ToString())">@proveedor.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <!-- Campos ocultos para enviar datos del proveedor -->
+            <input type="hidden" id="ProveedorIDHidden" name="ProveedorID" value="@Model.ProveedorID" />
+            <input type="hidden" id="NombreProveedorHidden" name="NombreProveedor" value="@Model.NombreProveedor" />
+
+            <!-- Número de Cédula -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Número de Cédula</label>
+                <input asp-for="NumeroCedula" id="NumeroCedula" class="form-control" readonly />
+            </div>
+
+            <!-- Teléfono -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Teléfono</label>
+                <input asp-for="Telefono" id="Telefono" class="form-control" readonly />
+            </div>
+
+            <!-- Correo Electrónico -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Correo Electrónico</label>
+                <input asp-for="CorreoElectronico" id="CorreoElectronico" class="form-control" readonly />
+            </div>
+
+            <!-- Monto -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Monto</label>
+                <input asp-for="Monto" class="form-control" type="number" step="0.01" required />
+            </div>
+
+            <!-- Fecha de Vencimiento -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Fecha de Vencimiento</label>
+                <input asp-for="FechaVencimiento" type="date" class="form-control" required min="@DateTime.Today.ToString("yyyy-MM-dd")">
+                <span asp-validation-for="FechaVencimiento" class="text-danger"></span>
+            </div>
+
+            <!-- Estado -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Estado</label>
+                <select asp-for="Estado" class="form-control">
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Pagado">Pagado</option>
+                </select>
+            </div>
+
+            <div class="d-flex justify-content-center gap-2">
+                <button type="submit" class="btn btn-primary px-4">Actualizar</button>
+                <a asp-action="Index" class="btn btn-secondary px-4">Cancelar</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- Scripts de validación -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Script para autocompletar los datos del proveedor -->
+<script>
+    $(document).ready(function () {
+        $("#ProveedorID").change(function () {
+            var proveedorId = $(this).val();
+            var proveedorTexto = $("#ProveedorID option:selected").text();
+
+            if (proveedorId) {
+                $.get("/Proveedores/GetProveedorData/" + proveedorId, function (data) {
+                    $("#NumeroCedula").val(data.numeroCedula);
+                    $("#Telefono").val(data.telefono);
+                    $("#CorreoElectronico").val(data.correoElectronico);
+
+                    // Guardar los valores en los campos ocultos para ser enviados en el formulario
+                    $("#ProveedorIDHidden").val(proveedorId);
+                    $("#NombreProveedorHidden").val(proveedorTexto);
+                }).fail(function () {
+                    alert("Error al obtener los datos del proveedor.");
+                });
+            }
+        });
+
+        // Interceptar el envío del formulario con AJAX
+        $("#formEditarCuentaPorPagar").submit(function (event) {
+            event.preventDefault(); // Evita el envío tradicional del formulario
+
+            var cuentaId = $("input[name='CuentaID']").val(); // Obtener el ID desde el formulario
+            var proveedorTexto = $("#ProveedorID option:selected").text();
+            $("#NombreProveedorHidden").val(proveedorTexto); // Asegurar que NombreProveedor se llena antes de enviar
+
+            var formData = $(this).serialize(); // Serializar los datos del formulario
+
+            $.ajax({
+                type: "POST",
+                url: "/CuentaPorPagar/Edit/" + cuentaId, // Enviar el ID en la URL
+                data: formData,
+                success: function (response) {
+                    window.location.href = "/CuentaPorPagar/Index";
+                },
+                error: function (xhr) {
+                    alert("Error al actualizar la cuenta: " + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>

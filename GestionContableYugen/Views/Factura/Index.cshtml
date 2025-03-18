@@ -1,0 +1,34 @@
+﻿@model IEnumerable<GestionContableYugen.ViewModels.FacturaViewModel>
+
+<h2>Facturas</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">Nueva Factura</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Usuario</th>
+            <th>Tipo Pago</th>
+            <th>Fecha</th>
+            <th>Total</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var factura in Model)
+        {
+            <tr>
+                <td>@factura.ClienteNombre</td>
+                <td>@factura.UsuarioNombre</td>
+                <td>@factura.TipoPagoDescripcion</td>
+                <td>@factura.FechaFactura.ToString("yyyy-MM-dd")</td>
+                <td>@factura.Total.ToString("C")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@factura.FacturaID" class="btn btn-warning">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@factura.FacturaID" class="btn btn-danger">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

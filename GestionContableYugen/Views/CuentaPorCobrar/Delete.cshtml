@@ -1,0 +1,59 @@
+﻿@model GestionContableYugen.ViewModels.CuentaPorCobrarViewModel
+
+@{
+    ViewData["Title"] = "Eliminar Cuenta por Cobrar";
+}
+
+<div class="delete-container">
+    <h2 class="text-center text-danger">Eliminar Cuenta por Cobrar</h2>
+    <p class="delete-message">¿Estás seguro de que deseas eliminar esta cuenta?</p>
+
+    <!-- Información de la cuenta -->
+    <div class="delete-details">
+        <p><strong>Cliente:</strong> @Model.NombreCliente</p>
+        <p><strong>Número de Cédula:</strong> @Model.NumeroCedula</p>
+        <p><strong>Teléfono:</strong> @Model.Telefono</p>
+        <p><strong>Correo Electrónico:</strong> @Model.CorreoElectronico</p>
+        <p><strong>Monto:</strong> @Model.Monto.ToString("C")</p>
+        <p><strong>Fecha de Vencimiento:</strong> @Model.FechaVencimiento.ToShortDateString()</p>
+        <p><strong>Estado:</strong> @Model.Estado</p>
+    </div>
+
+    <!-- Botones -->
+    <form id="formDeleteCuenta" asp-action="Delete" method="post">
+        <input type="hidden" asp-for="CuentaID" />
+
+        <div class="delete-buttons">
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+            <a asp-action="Index" class="btn-cancel">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<!-- Script para manejar la eliminación con AJAX -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#formDeleteCuenta").submit(function (event) {
+            event.preventDefault(); // Evita el envío tradicional del formulario
+
+            var cuentaId = $("input[name='CuentaID']").val(); // Obtener el ID desde el formulario
+            var formData = $(this).serialize(); // Serializar los datos
+
+            if (confirm("¿Estás seguro que deseas eliminar esta cuenta por cobrar?")) {
+                $.ajax({
+                    type: "POST",
+                    url: "/CuentaPorCobrar/Delete/" + cuentaId,
+                    data: formData,
+                    success: function (response) {
+                        alert("Cuenta eliminada correctamente.");
+                        window.location.href = "/CuentaPorCobrar/Index";
+                    },
+                    error: function (xhr) {
+                        alert("Error al eliminar la cuenta: " + xhr.responseText);
+                    }
+                });
+            }
+        });
+    });
+</script>

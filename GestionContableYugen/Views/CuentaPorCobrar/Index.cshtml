@@ -1,0 +1,114 @@
+﻿@model IEnumerable<GestionContableYugen.ViewModels.CuentaPorCobrarViewModel>
+
+@{
+    ViewData["Title"] = "Cuentas por Cobrar";
+}
+
+<h2 class="text-primary" style="color: black !important;">Cuentas por Cobrar</h2>
+
+
+<!-- Sección de filtros -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a asp-action="Create" class="btn btn-primary">Agregar Nueva Cuenta</a>
+
+    <div class="d-flex">
+        <label for="fechaInicio" class="me-2">Fecha inicio:</label>
+        <input type="date" id="fechaInicio" class="form-control me-2">
+
+        <label for="fechaFin" class="me-2">Fecha fin:</label>
+        <input type="date" id="fechaFin" class="form-control me-2">
+
+        <label for="cliente" class="me-2">Buscar Cliente:</label>
+        <input type="text" id="cliente" class="form-control" placeholder="Nombre del Cliente">
+
+        <button class="btn btn-dark me-2" id="btnBuscar">Buscar</button>
+
+        <button id="btnExportar" class="btn btn-secondary">Exportar PDF</button>
+
+        <button class="btn btn-secondary me-2" id="btnRestablecer">Restablecer</button>
+
+    </div>
+</div>
+
+<!-- Tabla con Bootstrap para mejor diseño -->
+<table class="table table-bordered table-striped">
+    <thead class="table-primary">
+        <tr>
+            <th>Cliente</th>
+            <th>Número de Cédula</th>
+            <th>Teléfono</th>
+            <th>Correo Electrónico</th>
+            <th>Monto</th>
+            <th>Fecha de Vencimiento</th>
+            <th>Estado</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="tablaCuentas">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.NombreCliente</td>
+                <td>@item.NumeroCedula</td>
+                <td>@item.Telefono</td>
+                <td>@item.CorreoElectronico</td>
+                <td>@item.Monto.ToString("N2")</td>
+                <td>@item.FechaVencimiento.ToShortDateString()</td>
+                <td>
+                    @if (item.Estado == "Pendiente")
+                    {
+                        <span class="badge bg-warning text-dark">Pendiente</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Pagado</span>
+                    }
+                </td>
+                <td class="text-center">
+                    <a asp-action="Edit" asp-route-id="@item.CuentaID" class="btn btn-sm btn-warning">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@item.CuentaID" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Script para Filtrar y Exportar -->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+        $(document).ready(function () {
+        $("#btnBuscar").click(function () {
+            let fechaInicio = $("#fechaInicio").val();
+            let fechaFin = $("#fechaFin").val();
+            let clienteNombre = $("#cliente").val().trim();
+
+            let url = `/CuentaPorCobrar/Index?`;
+
+            if (fechaInicio) url += `fechaInicio=${encodeURIComponent(fechaInicio)}&`;
+            if (fechaFin) url += `fechaFin=${encodeURIComponent(fechaFin)}&`;
+            if (clienteNombre) url += `clienteNombre=${encodeURIComponent(clienteNombre)}`;
+
+            window.location.href = url;
+        });
+
+        $("#btnExportar").click(function () {
+            let url = `/CuentaPorCobrar/ExportarPDF`; // ❌ Ya no mandamos filtros, porque se guardaron en Session
+            console.log("Exportando PDF con URL:", url);
+            window.location.href = url;
+        });
+
+        $("#btnRestablecer").click(function () {
+            window.location.href = "/CuentaPorCobrar/Index"; // 🔄 Recarga limpia
+        });
+    });
+
+</script>
+
+
+
+
+
+
+

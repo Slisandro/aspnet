@@ -1,0 +1,29 @@
+﻿@model GestionContableYugen.ViewModels.ActivoFijoViewModel
+
+@{
+    ViewData["Title"] = "Eliminar Activo Fijo";
+}
+
+<div class="container d-flex justify-content-center align-items-center mt-5">
+    <div class="card p-4" style="width: 450px; border-radius: 10px; border: 1px solid #dee2e6;">
+        <h3 class="text-center text-danger mb-4">Eliminar Activo Fijo</h3>
+        <p class="text-center text-muted">¿Estás seguro de que deseas eliminar este activo fijo?</p>
+
+        <!-- Información del Activo -->
+        <div class="delete-details">
+            <p><strong>Nombre:</strong> @Model.NombreActivo</p>
+            <p><strong>Valor Inicial:</strong> @Model.ValorInicial.ToString("C")</p>
+            <p><strong>Vida Útil:</strong> @Model.VidaUtil años</p>
+            <p><strong>Estado:</strong> @Model.Estado</p>
+        </div>
+
+        <!-- Botones -->
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="ActivoID" />
+            <div class="d-flex justify-content-center gap-2">
+                <button type="submit" class="btn btn-danger px-4">Eliminar</button>
+                <a asp-action="Index" class="btn btn-secondary px-4">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>

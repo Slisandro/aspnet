@@ -1,0 +1,30 @@
+﻿@model GestionContableYugen.ViewModels.CierreCajaViewModel
+
+<h2>Editar Cierre de Caja</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="CierreID" />
+
+    <div class="form-group">
+        <label asp-for="FechaCierre"></label>
+        <input asp-for="FechaCierre" class="form-control" type="date" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="SaldoInicial"></label>
+        <input asp-for="SaldoInicial" class="form-control" type="number" step="0.01" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="TotalIngresos"></label>
+        <input asp-for="TotalIngresos" class="form-control" type="number" step="0.01" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="TotalEgresos"></label>
+        <input asp-for="TotalEgresos" class="form-control" type="number" step="0.01" />
+    </div>
+
+    <button type="submit" class="btn btn-warning">Actualizar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

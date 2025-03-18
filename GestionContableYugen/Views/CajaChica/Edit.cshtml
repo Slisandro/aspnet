@@ -1,0 +1,110 @@
+﻿@model GestionContableYugen.ViewModels.CajaChicaViewModel
+
+@{
+    ViewData["Title"] = "Editar Movimiento";
+}
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<div class="container d-flex justify-content-center align-items-center mt-5">
+    <div class="card p-4" style="width: 450px; border-radius: 10px; border: 1px solid #dee2e6;">
+        <h3 class="text-center mb-4">Editar Movimiento</h3>
+
+        <form id="formEditMovimiento" asp-action="Edit" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="MovimientoID" />
+            <input type="hidden" asp-for="UsuarioID" />
+            <input type="hidden" asp-for="NombreUsuario" />
+
+            <!-- Usuario -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Usuario</label>
+                <input type="text" class="form-control" value="@Model.NombreUsuario" disabled />
+            </div>
+
+            <!-- Fecha Movimiento -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Fecha Movimiento</label>
+                <input asp-for="FechaMovimiento" class="form-control" type="date" required />
+            </div>
+
+            <!-- Monto -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Monto</label>
+                <input asp-for="Monto" class="form-control" type="number" step="0.01" required />
+            </div>
+
+            <!-- Descripción -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Descripción</label>
+                <textarea asp-for="Descripcion" class="form-control" rows="2"></textarea>
+            </div>
+
+            <!-- Número de Factura -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Número de Factura</label>
+                <input asp-for="NumeroFactura" class="form-control" />
+            </div>
+
+            <!-- Proveedor -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Proveedor</label>
+                <input asp-for="Proveedor" class="form-control" />
+            </div>
+
+            <!-- Factura Adjunta -->
+            <div class="form-group mb-3">
+                <label class="fw-bold">Factura Adjunta (Opcional)</label>
+                <input type="file" name="FacturaAdjuntaFile" class="form-control" />
+
+                @if (!string.IsNullOrEmpty(Model.FacturaAdjunta))
+                {
+                    <p>Archivo actual: <a href="@Url.Content(Model.FacturaAdjunta)" target="_blank">Ver</a></p>
+                }
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-center gap-2">
+                <button type="submit" class="btn btn-primary px-4">Guardar</button>
+                <a asp-action="Index" class="btn btn-secondary px-4">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        console.log(" jQuery está funcionando en Editar Movimiento");
+
+        $("#formEditMovimiento").submit(function (event) {
+            event.preventDefault(); // Evitar el envío tradicional
+
+            var formData = new FormData(this);
+
+            console.log(" Enviando datos al servidor...");
+            for (var pair of formData.entries()) {
+                console.log(pair[0] + ": " + pair[1]); // Ver qué datos se están enviando
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/CajaChica/Edit/" + $("input[name='MovimientoID']").val(),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    console.log(" Guardado correctamente:", response);
+                    window.location.href = "/CajaChica/Index";
+                },
+                error: function (xhr) {
+                    console.error(" Error al guardar:", xhr.responseText);
+                    alert("Error: " + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+
+

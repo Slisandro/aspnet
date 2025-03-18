@@ -1,0 +1,93 @@
+﻿@model IEnumerable<GestionContableYugen.ViewModels.ProductoViewModel>
+
+@{
+    ViewData["Title"] = "Inventario";
+}
+
+<h2 class="text-primary">Inventario</h2>
+
+<!-- Sección de filtros -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a asp-action="Create" class="btn btn-primary">Nuevo Producto</a>
+
+    <div class="d-flex">
+        <label for="nombreProducto" class="me-2">Producto:</label>
+        <input type="text" id="nombreProducto" class="form-control me-2" placeholder="Ejemplo: Laptop Dell">
+
+        <label for="codigoBarras" class="me-2">Código de Barras:</label>
+        <input type="text" id="codigoBarras" class="form-control me-2" placeholder="Ejemplo: 123456789">
+
+        <label for="categoria" class="me-2">Categoría:</label>
+        <input type="text" id="categoria" class="form-control me-2" placeholder="Ejemplo: Electrónica">
+
+        <button class="btn btn-dark me-2" id="btnBuscar">Buscar</button>
+        <button id="btnExportar" class="btn btn-secondary">Exportar PDF</button>
+        <button class="btn btn-secondary me-2" id="btnRestablecer">Restablecer</button>
+    </div>
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-primary">
+        <tr>
+            <th>Nombre</th>
+            <th>Código de Barras</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Fecha de Ingreso</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.NombreProducto</td>
+                <td>@item.CodigoBarras</td>
+                <td>@item.Categoria</td>
+                <td>@item.Precio</td>
+                <td>@item.CantidadDisponible</td>
+                <td>@item.FechaIngreso.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.CodigoBarras" class="btn btn-warning">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@item.CodigoBarras" class="btn btn-danger">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // 🟢 Filtro de búsqueda
+        $("#btnBuscar").click(function () {
+            let nombreProducto = $("#nombreProducto").val().trim();
+            let codigoBarras = $("#codigoBarras").val().trim();
+            let categoria = $("#categoria").val().trim();
+
+            let url = `/Producto/Index?`;
+
+            if (nombreProducto) url += `nombreProducto=${encodeURIComponent(nombreProducto)}&`;
+            if (codigoBarras) url += `codigoBarras=${encodeURIComponent(codigoBarras)}&`;
+            if (categoria) url += `categoria=${encodeURIComponent(categoria)}`;
+
+            console.log("Redirigiendo a:", url);
+            window.location.href = url;
+        });
+
+        // 🟢 Exportar a PDF
+        $("#btnExportar").click(function () {
+            let url = `/Producto/ExportarPDF`;
+            console.log("Exportando PDF con URL:", url);
+            window.location.href = url;
+        });
+
+        // 🟢 Restablecer filtros
+        $("#btnRestablecer").click(function () {
+            console.log("Restableciendo filtros...");
+            window.location.href = "/Producto/Index";
+        });
+    });
+</script>

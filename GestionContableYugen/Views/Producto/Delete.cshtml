@@ -1,0 +1,59 @@
+﻿@model GestionContableYugen.ViewModels.ProductoViewModel
+
+@{
+    ViewData["Title"] = "Eliminar Producto";
+}
+
+<div class="delete-container">
+    <h2 class="text-center text-danger">Eliminar Producto</h2>
+    <p class="delete-message">¿Estás seguro de que deseas eliminar este producto?</p>
+
+    <!-- Información del Producto -->
+    <div class="delete-details">
+        <p><strong>Nombre:</strong> @Model.NombreProducto</p>
+        <p><strong>Código de Barras:</strong> @Model.CodigoBarras</p>
+        <p><strong>Precio:</strong> @Model.Precio.ToString("C")</p>
+        <p><strong>Cantidad Disponible:</strong> @Model.CantidadDisponible</p>
+        <p><strong>Categoría:</strong> @Model.Categoria</p>
+        <p><strong>Fecha de Ingreso:</strong> @Model.FechaIngreso.ToShortDateString()</p>
+    </div>
+
+    <!-- Botones -->
+    <form id="formDeleteProducto" asp-action="DeleteConfirmed" asp-route-id="@Model.CodigoBarras" method="post">
+        <input type="hidden" asp-for="CodigoBarras" />
+
+        <div class="delete-buttons">
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+            <a asp-action="Index" class="btn-cancel">Cancelar</a>
+        </div>
+    </form>
+
+</div>
+
+<!-- Script para manejar la eliminación con AJAX -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+        $("#formDeleteProducto").submit(function (event) {
+        event.preventDefault(); // Evita la recarga de la página
+
+        var form = $(this);
+        var productoId = $("input[name='CodigoBarras']").val();
+
+        if (confirm("¿Estás seguro que deseas eliminar este producto?")) {
+            $.ajax({
+                type: "POST",
+                url: form.attr("action"), // URL automática del formulario
+                data: form.serialize(),
+                success: function () {
+                    alert("Producto eliminado correctamente.");
+                    window.location.href = "/Producto/Index";
+                },
+                error: function (xhr) {
+                    alert("Error al eliminar el producto: " + xhr.responseText);
+                }
+            });
+        }
+    });
+
+</script>
+
